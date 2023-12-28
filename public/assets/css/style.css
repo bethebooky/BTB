@@ -1077,14 +1077,16 @@ label {
 /* width: 25%; */
 /* } */
 .cont-inp {
+  background: #010314;
+  border: solid 0.3px #fff;
+  color: var(--tg-primary-color);
   width: 100%;
   padding: 10px 8px;
-  border: #fff;
   border-radius: 10px 0px 0px 10px;
 }
 
 .btn-purchase {
-  background-color: var(--tg-second-primary-color);
+  background-color: var(--tg-primary-color);
   border-radius: 0px;
   border: none;
   padding: 16px 36px;
@@ -1093,7 +1095,7 @@ label {
 }
 
 .btn-purchase:hover {
-  background-color: var(--tg-primary-color);
+  background-color: var(--tg-second-primary-color);
 }
 
 .helper-text {
