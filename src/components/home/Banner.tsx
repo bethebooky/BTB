@@ -2,11 +2,12 @@
 import Image from "next/image";
 import CountdownClock from "@/ui/CountDownClock";
 import bannerShape_1 from "@/assets/img/banner/banner_shape01.png";
-import bannerShape_2 from "@/assets/img/banner/banner_shape02.png";
+import bannerShape_2 from "@/assets/img/banner/banner-1.png";
 import { useEffect, useState } from "react";
 import { parseEther } from "viem";
 import {
   useAccount,
+  useBalance,
   useContractWrite,
   useNetwork,
   usePrepareContractWrite,
@@ -38,7 +39,7 @@ const ToastArgs: ToastOptions = {
 };
 
 const Banner = () => {
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
   const { getEthPriceNow } = require("get-eth-price");
   const { chain } = useNetwork();
 
@@ -46,7 +47,9 @@ const Banner = () => {
   const [ethAmount, setEthAmount] = useState<number>(0);
   const [ethPrice, setEthPrice] = useState<number>();
   const [bookyPerEth, setBookyPerEth] = useState<number | undefined>();
-
+  const { data: balanceData } = useBalance({
+    address,
+  });
   const handleEthAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputVal = e.target.value;
     const parsedValue = parseFloat(inputVal);
@@ -67,7 +70,7 @@ const Banner = () => {
     address: bookyICOAddress,
     abi: ABI,
     functionName: "buyToken",
-    value: parseEther("0.1"),
+    value: parseEther(ethAmount.toString()),
   });
 
   const {
@@ -119,18 +122,24 @@ const Banner = () => {
   return (
     <section
       className="banner-area banner-bg"
-      style={{ backgroundImage: `url(/assets/img/banner/banner_bg.png)` }}
+      style={{
+        backgroundImage: `url(/assets/img/banner/banner_p.png)`,
+      }}
     >
       <div className="container">
         <div className="row">
           <div className="col-lg-6">
             <div className="banner-content text-start">
               <h2 className="title">
-                Discover the Next Big Opportunity: Our ICO is Live
+                ICO NOW LIVE<br></br> The Worlds First Crypto Casino Where You
+                Can Be The House
               </h2>
               <p>
-                A new smart block chain based marketplace for trading digital{" "}
-                <br /> goods & assets according.
+                The World&#39;s FIRST Crypto Gambling site where YOU can stake
+                YOUR $BOOKY Tokens and be the booky. Act as the bookmaker on all
+                major sporting events and casino games by setting your odds and
+                collecting your winnings or stake your tokens into the POOL and
+                earn from the house daily.
               </p>
             </div>
           </div>
@@ -153,6 +162,13 @@ const Banner = () => {
                     placeholder="0.001 ETH"
                     // value={ethAmount}
                   />
+                  <p style={{ color: "#fff" }}>
+                    Balance:{" "}
+                    {balanceData?.formatted &&
+                    +(balanceData?.formatted || 0) > 0.001
+                      ? (+balanceData?.formatted).toFixed(3)
+                      : "0"}{" "}
+                  </p>
                 </div>
                 <div className="btn-block">
                   <button
@@ -175,13 +191,23 @@ const Banner = () => {
                   </button>
                 </div>
               </div>
-              <div className="claculate text-center">
-                {!ethAmount || ethAmount === 0
-                  ? "0 ETH ≈ 0 BOOKY"
-                  : !bookyPerEth || Number.isNaN(bookyPerEth)
-                  ? "0 ETH ≈ 0 BOOKY"
-                  : `${ethAmount} ETH ≈ ${Math.round(bookyPerEth)} BOOKY`}
+              <div className="claculate text-center" style={{ color: "#fff" }}>
+                1 USD ≈ 500 BOOKY
               </div>
+              {ethAmount ? (
+                <div
+                  className="claculate text-center"
+                  style={{ color: "#fff" }}
+                >
+                  {!ethAmount || ethAmount === 0
+                    ? "0 ETH ≈ 0 BOOKY"
+                    : !bookyPerEth || Number.isNaN(bookyPerEth)
+                    ? "0 ETH ≈ 0 BOOKY"
+                    : `${ethAmount} ETH ≈ ${Math.round(bookyPerEth)} BOOKY`}
+                </div>
+              ) : (
+                ""
+              )}
             </div>
           </div>
         </div>
@@ -194,8 +220,18 @@ const Banner = () => {
         </a>
       </div>
       <div className="banner-shape-wrap">
-        <Image src={bannerShape_1} alt="" className="leftToRight" />
-        <Image src={bannerShape_2} alt="" className="alltuchtopdown" />
+        <Image
+          src={bannerShape_1}
+          alt=""
+          className="leftToRight"
+          style={{ display: "none" }}
+        />
+        <Image
+          src={bannerShape_2}
+          width={200}
+          alt=""
+          className="alltuchtopdown"
+        />
       </div>
     </section>
   );

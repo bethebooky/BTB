@@ -10,20 +10,20 @@ import RoadMapArea from "./RoadMapArea";
 import Team from "./Team";
 
 const Home = () => {
-   return (
-      <>
-         <Banner />
-         <Contribution />
-         <Brand />
-         <FeatureOne />
-         <FeatureTwo />
-         <ChartArea />
-         <RoadMapArea />
-         <Team />
-         <FAQ />
-         <DownloadArea />
-      </>
-   )
-}
+  return (
+    <>
+      <Banner />
+      {/* <Contribution /> */}
+      <Brand />
+      <FeatureOne />
+      {/* <FeatureTwo /> */}
+      {/* <ChartArea /> */}
+      <RoadMapArea />
+      {/* <Team /> */}
+      {/* <FAQ /> */}
+      {/* <DownloadArea /> */}
+    </>
+  );
+};
 
 export default Home;

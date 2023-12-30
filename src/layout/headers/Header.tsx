@@ -52,7 +52,7 @@ const Header = () => {
                             }}
                           />
                         </li>
-                        <li className="offcanvas-menu">
+                        {/* <li className="offcanvas-menu">
                           <a
                             onClick={() => setOffCanvas(true)}
                             style={{ cursor: "pointer" }}
@@ -60,7 +60,7 @@ const Header = () => {
                           >
                             <i className="fas fa-bars"></i>
                           </a>
-                        </li>
+                        </li> */}
                       </ul>
                     </div>
                     <div
@@ -77,7 +77,7 @@ const Header = () => {
         </div>
       </header>
       <Sidebar style={false} isActive={isActive} setIsActive={setIsActive} />
-      <HeaderOffcanvas offCanvas={offCanvas} setOffCanvas={setOffCanvas} />
+      {/* <HeaderOffcanvas offCanvas={offCanvas} setOffCanvas={setOffCanvas} /> */}
     </>
   );
 };
