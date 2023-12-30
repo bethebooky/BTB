@@ -1094,6 +1094,15 @@ label {
   border-radius: 0px 10px 10px 0px;
 }
 
+.btn-purchase:disabled {
+  background-color: var(--tg-primary-color);
+  border-radius: 0px;
+  border: none;
+  padding: 16px 36px;
+  color: var(--tg-white);
+  border-radius: 0px 10px 10px 0px;
+}
+
 .btn-purchase:hover {
   background-color: var(--tg-second-primary-color);
 }

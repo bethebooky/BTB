@@ -1,24 +1,48 @@
 "use client";
 import Image from "next/image";
 import CountdownClock from "@/ui/CountDownClock";
-import { Modal, Button, Container, Row, Form } from "react-bootstrap";
-
 import bannerShape_1 from "@/assets/img/banner/banner_shape01.png";
 import bannerShape_2 from "@/assets/img/banner/banner_shape02.png";
-import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
+import { parseEther } from "viem";
+import {
+  useAccount,
+  useContractWrite,
+  useNetwork,
+  usePrepareContractWrite,
+  useWaitForTransaction,
+} from "wagmi";
+import { ToastOptions, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ABI from "../../ABI/BoockyICO.json";
+
+const errorMessages = {
+  walletNotConnected: "Please Connect Wallet First!",
+  zeroEthValue: "ETH Value can't be zero!",
+  contractError: "Something Went Wrong!",
+};
+
+const successMessage = {
+  claimedSuccess: "Tokens received successfully",
+};
+
+const ToastArgs: ToastOptions = {
+  position: "top-right",
+  autoClose: 5000,
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+  theme: "light",
+};
 
 const Banner = () => {
   const { isConnected } = useAccount();
-
   const { getEthPriceNow } = require("get-eth-price");
+  const { chain } = useNetwork();
 
-  const [show, setShow] = useState(false);
-
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
+  const bookyICOAddress = "0x441e29f04d6B72C8f47de0482C112AD243582047";
   const [ethAmount, setEthAmount] = useState<number>(0);
   const [ethPrice, setEthPrice] = useState<number>();
   const [bookyPerEth, setBookyPerEth] = useState<number | undefined>();
@@ -32,20 +56,46 @@ const Banner = () => {
     findBookyPrice(parsedValue);
   };
 
-  function clicked() {
-    ethAmount > 0
-      ? console.log(ethAmount)
-      : () => {
-          console.log("eth value can't be zero");
-        };
+  const toastOpen = (message: string, error: boolean) => {
+    return error
+      ? toast.error(message, ToastArgs)
+      : toast.success(message, ToastArgs);
+  };
+
+  const { config } = usePrepareContractWrite({
+    chainId: chain?.id,
+    address: bookyICOAddress,
+    abi: ABI,
+    functionName: "buyToken",
+    value: parseEther("0.1"),
+  });
+
+  const {
+    isLoading: isContractLoading,
+    data,
+    isError,
+    isSuccess,
+    write,
+  } = useContractWrite(config);
+  const { isLoading } = useWaitForTransaction({
+    hash: data?.hash,
+  });
+
+  async function buyBooky() {
+    if (!isConnected) {
+      return toastOpen(errorMessages.walletNotConnected, true);
+    }
+    if (ethAmount <= 0 || !ethAmount) {
+      return toastOpen(errorMessages.zeroEthValue, true);
+    }
+    write?.();
   }
 
   const findBookyPrice = (ethValue: number) => {
     const BOOkYPriceUSD = 0.008;
-    // Check if ethPrice is defined before performing the calculation
     if (typeof ethPrice !== "undefined") {
       const BOOkYPerUSD = 1 / BOOkYPriceUSD;
-      const BOOkYPerEth: number = BOOkYPerUSD * (ethPrice / ethValue);
+      const BOOkYPerEth: number = BOOkYPerUSD * (ethPrice * ethValue);
       setBookyPerEth(BOOkYPerEth);
     }
   };
@@ -56,6 +106,15 @@ const Banner = () => {
       setEthPrice(ethData.USD);
     });
   }, []);
+
+  useEffect(() => {
+    if (isSuccess) {
+      toastOpen(successMessage.claimedSuccess, false);
+    }
+    if (isError) {
+      toastOpen(errorMessages.contractError, true);
+    }
+  }, [isSuccess, isError]);
 
   return (
     <section
@@ -85,14 +144,6 @@ const Banner = () => {
                   Pre-Sale Target: <span>$444,000</span>
                 </h2>
               </div>
-              {/* <div className="contribution-btn">
-                <button className="btn btn-purchase" onClick={handleShow}>
-                  Buy BOOKY
-                </button>
-                <Link href="https://t.me/bethebooky" className="btn btn-two">
-                  Join Community
-                </Link>
-              </div> */}
               <div className="contribution-sec">
                 <div className="inp-block">
                   <input
@@ -104,8 +155,23 @@ const Banner = () => {
                   />
                 </div>
                 <div className="btn-block">
-                  <button className="btn btn-purchase" onClick={clicked}>
-                    Buy BOOKY
+                  <button
+                    disabled={isLoading || isContractLoading}
+                    className="btn btn-purchase"
+                    onClick={buyBooky}
+                  >
+                    {isLoading || isContractLoading ? (
+                      <>
+                        <span
+                          className="spinner-border spinner-border-sm"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
+                        {" Loading.."}
+                      </>
+                    ) : (
+                      "Buy BOOKY"
+                    )}
                   </button>
                 </div>
               </div>
@@ -131,55 +197,6 @@ const Banner = () => {
         <Image src={bannerShape_1} alt="" className="leftToRight" />
         <Image src={bannerShape_2} alt="" className="alltuchtopdown" />
       </div>
-
-      {/* <Modal
-        show={show}
-        onHide={handleClose}
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header className="px-4 modal-head">
-          <Modal.Title className="mx-auto">Buy BOOKY With ETH</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Container>
-            <Row className="justify-content-center">
-              <div className="col-10">
-                <div className="inp-block">
-                  <Form.Text className="text-muted">
-                    Add the ETH amount.
-                  </Form.Text>
-                  <input
-                    onChange={handleEthAmountChange}
-                    className="cont-inp"
-                    type="number"
-                    placeholder="0.001 ETH"
-                    // value={ethAmount}
-                  />
-                </div>
-                <div className="calc-text-block text-center">
-                  <h2 className="calc-text">
-                    {!ethAmount || ethAmount === 0
-                      ? "0 ETH ≈ 0 BOOKY"
-                      : !bookyPerEth || Number.isNaN(bookyPerEth)
-                      ? "0 ETH ≈ 0 BOOKY"
-                      : `${ethAmount} ETH ≈ ${Math.round(bookyPerEth)} BOOKY`}
-                  </h2>
-                </div>
-                <div className="btn-block text-center mt-5">
-                  <button
-                    disabled={isConnected}
-                    className="btn btn-purchase-two"
-                    onClick={clicked}
-                  >
-                    {isConnected ? "Buy BOOKY" : "Please connect wallet"}
-                  </button>
-                </div>
-              </div>
-            </Row>
-          </Container>
-        </Modal.Body>
-      </Modal> */}
     </section>
   );
 };

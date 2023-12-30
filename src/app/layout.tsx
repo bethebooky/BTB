@@ -7,16 +7,16 @@ import DocumentArea from "@/components/common/DocumentArea";
 import "@rainbow-me/rainbowkit/styles.css";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { mainnet } from "wagmi/chains";
+import { goerli, mainnet } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
 const ALCHEMY_KEY = process.env.ALCHEMY_ID || "";
 const { chains, publicClient } = configureChains(
-  [mainnet],
+  [mainnet, goerli],
   [
     alchemyProvider({
-      apiKey: ALCHEMY_KEY,
+      apiKey: "qSLiFF0odiy-OqMCvaHeleOBv4UniGse",
     }),
     publicProvider(),
   ]

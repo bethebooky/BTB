@@ -45,9 +45,7 @@ const Header = () => {
                     <div className="header-action">
                       <ul className="list-wrap">
                         <li className="header-login">
-                          {/* <Link href="/login">Login<i className="fas fa-user"></i></Link> */}
                           <ConnectButton
-                            chainStatus="icon"
                             accountStatus={{
                               smallScreen: "avatar",
                               largeScreen: "full",
