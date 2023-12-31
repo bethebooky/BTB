@@ -11,7 +11,6 @@ import {
   useContractRead,
   useContractWrite,
   useNetwork,
-  usePrepareContractWrite,
   useWaitForTransaction,
 } from "wagmi";
 import { ToastOptions, toast } from "react-toastify";
@@ -40,7 +39,7 @@ const ToastArgs: ToastOptions = {
 };
 
 const Banner = () => {
-  const bookyICOAddress = "0xAFcCDE6fc4293C423431Ee1E0f1c7f7E108a68DF";
+  const bookyICOAddress = "0x721afeaa6b4444de12cceeb195517cfe2e3b7cdb";
 
   const { address, isConnected } = useAccount();
   const { getEthPriceNow } = require("get-eth-price");
@@ -130,7 +129,6 @@ const Banner = () => {
   useEffect(() => {
     const checkForPhase = async () => {
       const currentPhase = await phaseRead;
-      console.log("current Phase", currentPhase);
       setCurrentPhase(currentPhase);
     };
     checkForPhase();
