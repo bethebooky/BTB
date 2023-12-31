@@ -8,6 +8,7 @@ import { parseEther } from "viem";
 import {
   useAccount,
   useBalance,
+  useContractRead,
   useContractWrite,
   useNetwork,
   usePrepareContractWrite,
@@ -39,17 +40,20 @@ const ToastArgs: ToastOptions = {
 };
 
 const Banner = () => {
+  const bookyICOAddress = "0xAFcCDE6fc4293C423431Ee1E0f1c7f7E108a68DF";
+
   const { address, isConnected } = useAccount();
   const { getEthPriceNow } = require("get-eth-price");
   const { chain } = useNetwork();
 
-  const bookyICOAddress = "0x441e29f04d6B72C8f47de0482C112AD243582047";
+  const [userBalance, setUserBalance] = useState<number>(0);
+  const [currentPhase, setCurrentPhase] = useState<any>();
   const [ethAmount, setEthAmount] = useState<number>(0);
-  const [ethPrice, setEthPrice] = useState<number>();
   const [bookyPerEth, setBookyPerEth] = useState<number | undefined>();
   const { data: balanceData } = useBalance({
     address,
   });
+
   const handleEthAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputVal = e.target.value;
     const parsedValue = parseFloat(inputVal);
@@ -65,23 +69,30 @@ const Banner = () => {
       : toast.success(message, ToastArgs);
   };
 
-  const { config } = usePrepareContractWrite({
-    chainId: chain?.id,
-    address: bookyICOAddress,
-    abi: ABI,
-    functionName: "buyToken",
-    value: parseEther(ethAmount.toString()),
-  });
-
   const {
     isLoading: isContractLoading,
     data,
     isError,
     isSuccess,
     write,
-  } = useContractWrite(config);
-  const { isLoading } = useWaitForTransaction({
+  } = useContractWrite({
+    chainId: chain?.id,
+    address: bookyICOAddress,
+    abi: ABI,
+    functionName: "buyToken",
+    account: address,
+    args: [],
+  });
+
+  const { isLoading, isSuccess: isTransactionSuccess } = useWaitForTransaction({
     hash: data?.hash,
+  });
+
+  const { data: phaseRead } = useContractRead({
+    address: bookyICOAddress,
+    abi: ABI,
+    functionName: "icoPhase",
+    chainId: chain?.id,
   });
 
   async function buyBooky() {
@@ -91,33 +102,52 @@ const Banner = () => {
     if (ethAmount <= 0 || !ethAmount) {
       return toastOpen(errorMessages.zeroEthValue, true);
     }
-    write?.();
+    const ethAmt = ethAmount.toString();
+    console.log(parseEther(ethAmt));
+    write({ value: parseEther(ethAmt) });
   }
 
   const findBookyPrice = (ethValue: number) => {
-    const BOOkYPriceUSD = 0.008;
-    if (typeof ethPrice !== "undefined") {
+    const BOOkYPriceUSD =
+      currentPhase == 1 ? 0.002 : currentPhase == 2 ? 0.008 : 0.017;
+    getEthPriceNow().then((data: any) => {
+      const ethData = data[Object.keys(data)[0]]?.ETH;
       const BOOkYPerUSD = 1 / BOOkYPriceUSD;
-      const BOOkYPerEth: number = BOOkYPerUSD * (ethPrice * ethValue);
+      const BOOkYPerEth: number = BOOkYPerUSD * (ethData.USD * ethValue);
       setBookyPerEth(BOOkYPerEth);
-    }
+    });
   };
 
   useEffect(() => {
-    getEthPriceNow().then((data: any) => {
-      const ethData = data[Object.keys(data)[0]]?.ETH;
-      setEthPrice(ethData.USD);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (isSuccess) {
+    if (isTransactionSuccess) {
       toastOpen(successMessage.claimedSuccess, false);
     }
     if (isError) {
       toastOpen(errorMessages.contractError, true);
     }
-  }, [isSuccess, isError]);
+  }, [isSuccess, isError, isTransactionSuccess]);
+
+  useEffect(() => {
+    const checkForPhase = async () => {
+      const currentPhase = await phaseRead;
+      console.log("current Phase", currentPhase);
+      setCurrentPhase(currentPhase);
+    };
+    checkForPhase();
+  }, [phaseRead]);
+
+  useEffect(() => {
+    const checkBalance = () => {
+      if (balanceData?.formatted) {
+        const blanceInt = +balanceData?.formatted;
+        if (blanceInt > 0.0001) {
+          const usrBalance = blanceInt.toFixed(3);
+          setUserBalance(+usrBalance);
+        }
+      }
+    };
+    checkBalance();
+  }, [address, isConnected, balanceData]);
 
   return (
     <section
@@ -132,7 +162,7 @@ const Banner = () => {
             <div className="banner-content text-start">
               <h2 className="title">
                 ICO NOW LIVE<br></br> The Worlds First Crypto Casino Where You
-                Can Be The House
+                Can Be The House.
               </h2>
               <p>
                 The World&#39;s FIRST Crypto Gambling site where YOU can stake
@@ -162,13 +192,7 @@ const Banner = () => {
                     placeholder="0.001 ETH"
                     // value={ethAmount}
                   />
-                  <p style={{ color: "#fff" }}>
-                    Balance:{" "}
-                    {balanceData?.formatted &&
-                    +(balanceData?.formatted || 0) > 0.001
-                      ? (+balanceData?.formatted).toFixed(3)
-                      : "0"}{" "}
-                  </p>
+                  <p style={{ color: "#fff" }}>Balance: {userBalance}</p>
                 </div>
                 <div className="btn-block">
                   <button

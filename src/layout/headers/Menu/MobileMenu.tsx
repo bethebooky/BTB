@@ -106,7 +106,8 @@ const MobileMenus = ({ setIsActive }: any) => {
       ))}
       <li className="menu-item-has-children">
         <p className="p-4">
-          Please visit the website's computer version if you wish to buy tokens.
+          Please visit the website&apos;s computer version if you wish to buy
+          tokens.
         </p>
       </li>
     </ul>
