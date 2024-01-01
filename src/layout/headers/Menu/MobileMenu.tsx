@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 // internal
 import menu_data from "../../../data/MenuData";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 const MobileMenus = ({ setIsActive }: any) => {
   const [navTitle, setNavTitle] = useState("");
@@ -104,11 +105,13 @@ const MobileMenus = ({ setIsActive }: any) => {
           )}
         </React.Fragment>
       ))}
-      <li className="menu-item-has-children">
-        <p className="p-4">
-          Please visit the website&apos;s computer version if you wish to buy
-          tokens.
-        </p>
+      <li className="menu-item-has-children p-3">
+        <ConnectButton
+          accountStatus={{
+            smallScreen: "avatar",
+            largeScreen: "full",
+          }}
+        />
       </li>
     </ul>
   );

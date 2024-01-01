@@ -39,14 +39,14 @@ const ToastArgs: ToastOptions = {
 };
 
 const Banner = () => {
-  const bookyICOAddress = "0x721afeaa6b4444de12cceeb195517cfe2e3b7cdb";
+  const bookyICOAddress = "0x4a67f02b6083890DA0305F0Bce8576d7BE9CCAeD";
 
   const { address, isConnected } = useAccount();
   const { getEthPriceNow } = require("get-eth-price");
   const { chain } = useNetwork();
 
   const [userBalance, setUserBalance] = useState<number>(0);
-  const [currentPhase, setCurrentPhase] = useState<any>();
+  const [currentPhase, setCurrentPhase] = useState<any>(1);
   const [ethAmount, setEthAmount] = useState<number>(0);
   const [bookyPerEth, setBookyPerEth] = useState<number | undefined>();
   const { data: balanceData } = useBalance({
@@ -90,7 +90,7 @@ const Banner = () => {
   const { data: phaseRead } = useContractRead({
     address: bookyICOAddress,
     abi: ABI,
-    functionName: "icoPhase",
+    functionName: "getICOPhase",
     chainId: chain?.id,
   });
 
@@ -132,7 +132,7 @@ const Banner = () => {
       setCurrentPhase(currentPhase);
     };
     checkForPhase();
-  }, [phaseRead]);
+  }, [phaseRead, isConnected, address]);
 
   useEffect(() => {
     const checkBalance = () => {
