@@ -1108,6 +1108,11 @@ label {
   border-radius: 10px 0px 0px 10px;
   margin-top: 22%;
 }
+@supports (font: -apple-system-body) and (-webkit-appearance: none) {
+  .cont-inp {
+    margin-top: 18%;
+  }
+}
 @-moz-document url-prefix() {
   .cont-inp {
     margin-top: 16%;
