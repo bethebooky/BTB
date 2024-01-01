@@ -1110,7 +1110,7 @@ label {
 }
 @supports (font: -apple-system-body) and (-webkit-appearance: none) {
   .cont-inp {
-    margin-top: 18%;
+    margin-top: 17%;
   }
 }
 @-moz-document url-prefix() {
