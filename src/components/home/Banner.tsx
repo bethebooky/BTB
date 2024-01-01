@@ -3,7 +3,6 @@ import Image from "next/image";
 import CountdownClock from "@/ui/CountDownClock";
 import bannerShape_1 from "@/assets/img/banner/banner_shape01.png";
 import bannerShape_2 from "@/assets/img/banner/bannershape1.png";
-import banner from "@/assets/img/banner/banner_p.png";
 
 import { useEffect, useState } from "react";
 import { parseEther } from "viem";
@@ -150,12 +149,7 @@ const Banner = () => {
   }, [address, isConnected, balanceData]);
 
   return (
-    <section
-      className="banner-area banner-bg"
-      style={{
-        backgroundImage: `url(/assets/img/banner/banner_p.png)`,
-      }}
-    >
+    <section className="banner-area banner-bg">
       <div className="container">
         <div className="row">
           <div className="col-lg-6">
