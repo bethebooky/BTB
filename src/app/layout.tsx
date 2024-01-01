@@ -10,6 +10,7 @@ import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { mainnet } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const ALCHEMY_KEY = process.env.ALCHEMY_ID || "";
 const { chains, publicClient } = configureChains(
@@ -63,6 +64,7 @@ export default function RootLayout({
           <RainbowKitProvider chains={chains}>
             <Header />
             {children}
+            <SpeedInsights />
             <DocumentArea />
             <Footer />
           </RainbowKitProvider>

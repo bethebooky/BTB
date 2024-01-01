@@ -964,7 +964,6 @@ label {
   display: flex;
   align-items: center;
   /* margin: 0 20px; */
-  background-image: url(/assets/img/banner/banner_p.png);
 }
 .banner-bg::before {
   content: "";
