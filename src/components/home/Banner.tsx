@@ -3,6 +3,8 @@ import Image from "next/image";
 import CountdownClock from "@/ui/CountDownClock";
 import bannerShape_1 from "@/assets/img/banner/banner_shape01.png";
 import bannerShape_2 from "@/assets/img/banner/bannershape1.png";
+import banner from "@/assets/img/banner/banner_p.png";
+
 import { useEffect, useState } from "react";
 import { parseEther } from "viem";
 import {
