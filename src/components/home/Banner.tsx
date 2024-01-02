@@ -152,7 +152,7 @@ const Banner = () => {
     <section
       className="banner-area banner-bg"
       style={{
-        backgroundImage: "url(/assets/img/banner/banner_p.png",
+        backgroundImage: "url(/assets/img/banner/banner_p.png)",
       }}
     >
       <div className="container">
